@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace API.Controllers;
 
-public class AccountController(AppDbConext conext, ITokenService tokenService) : BaseApiController
+public class AccountController(AppDbContext context, ITokenService tokenService) : BaseApiController
 {
     [HttpPost("register")] //api/account/register
     public async Task<ActionResult<UserDto>> Register(RegisterDto registerDto)
@@ -28,15 +28,15 @@ public class AccountController(AppDbConext conext, ITokenService tokenService) :
             PasswordSalt = hmac.Key
         };
 
-        conext.Users.Add(user);
-        await conext.SaveChangesAsync();
+        context.Users.Add(user);
+        await context.SaveChangesAsync();
         return user.ToDto(tokenService);
     }
 
     [HttpPost("login")]
     public async Task<ActionResult<UserDto>> Login(LoginDto loginDto)
     {
-        var user = await conext.Users.SingleOrDefaultAsync(x=> x.Email == loginDto.Email);
+        var user = await context.Users.SingleOrDefaultAsync(x=> x.Email == loginDto.Email);
         if(user == null)
             return Unauthorized("Invalid email address");
         using var hmac = new HMACSHA512(user.PasswordSalt);
@@ -52,7 +52,7 @@ public class AccountController(AppDbConext conext, ITokenService tokenService) :
 
     private async Task<bool> EmailExists(string Email)
     {
-        return await conext.Users.AnyAsync(x => x.Email.ToLower() == Email.ToLower());
+        return await context.Users.AnyAsync(x => x.Email.ToLower() == Email.ToLower());
     }
 
 }

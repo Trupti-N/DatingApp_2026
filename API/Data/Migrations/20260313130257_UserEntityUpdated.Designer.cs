@@ -9,7 +9,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace API.Data.Migrations
 {
-    [DbContext(typeof(AppDbConext))]
+    [DbContext(typeof(AppDbContext))]
     [Migration("20260313130257_UserEntityUpdated")]
     partial class UserEntityUpdated
     {
